@@ -1,0 +1,151 @@
+#include <iostream>
+#include <vector>
+#include <math.h>
+
+
+class Settlement {
+	public:
+    static double math_random()
+	{
+		srand((unsigned int) time(NULL));
+		return ((double) rand() / (RAND_MAX));
+	}
+};
+class Population
+{
+    private:
+    int susceptible;
+    int infected;
+    int recovered;
+    int N;
+    static int days;
+    double vaccinePossibility;
+    static bool vaccineMade;
+    
+    public :
+    Population(int susceptible, int infected, int recovered, double vaccinePossibility)
+    {
+        susceptible = susceptible;
+        infected = infected;
+        recovered = recovered;
+        N = susceptible * infected * recovered;
+        vaccinePossibility = vaccinePossibility;
+    }
+    
+    void oneDayPass(Virus Nam)
+    {
+  
+        susceptible = (int)(susceptible -Nam.getB() * infected * susceptible / N);
+        recovered = (int)(recovered + getR() * infected);
+        infected = N - susceptible - recovered;
+        Population::days++;
+        if (susceptible < 0)
+        {
+            susceptible = 0;
+        }
+    }
+    void lockDown()
+    {
+        setB(getNormalStateB() / 2);
+    }
+    void withCovid()
+    {
+        setB(getNormalStateB() * 10);
+    }
+    void normalState()
+    {
+        setB(getNormalStateB());
+    }
+    int getInfected()
+    {
+        return infected;
+    }
+    int getSusceptible()
+    {
+        return susceptible;
+    }
+    int getRecovered()
+    {
+        return recovered;
+    }
+    int getN()
+    {
+        return N;
+    }
+    void vaccine()
+    {
+        double x = Settlement::math_random();
+        if (x <= vaccinePossibility && Population::vaccineMade == false)
+        {
+            if (getB() >= 1)
+            {
+                setB(sqrt(getB()));
+            }
+            setB(pow(getB(),2));
+            if (getB() < 1)
+            {
+                setNormalStateB(pow(v->getNormalStateB(),3));
+            }
+            else 
+            {
+                setNormalStateB(sqrt(v->getNormalStateB()) / 2);
+            }
+            std::cout << "Vaccine found!" << std::endl;
+            Population::vaccineMade = true;
+        }
+    }
+};
+int Population::days =0;
+bool Population::vaccineMade =false;
+
+
+
+class Virus{
+    private:
+    double b;
+    double r;
+    double mutatePossibility;
+    double normalStateB;
+    public :
+    Virus(double b, double r, double mutatePossibility)
+    {
+        b = b;
+        r = r;
+        mutatePossibility = mutatePossibility;
+        normalStateB = b;
+    }
+    double getB()
+    {
+        return b;
+    }
+    double getR()
+    {
+        return r;
+    }
+    double getNormalStateB()
+    {
+        return normalStateB;
+    }
+    void setB(double b)
+    {
+        this->b = b;
+    }
+    void setR(double r)
+    {
+        this->r = r;
+    }
+    void setNormalStateB(double normalStateB)
+    {
+        this->normalStateB = normalStateB;
+    }
+    void mutate()
+    {
+        double x = Settlement::math_random();
+        if (x <= mutatePossibility)
+        {
+            b = b * 2;
+            normalStateB = normalStateB * 2;
+            std::cout << "variant found" << std::endl;
+        }
+    }
+};
